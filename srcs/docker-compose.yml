@@ -1,8 +1,7 @@
-
 services:
-  db:
-    build: ./mariadb
-    container_name: mariadb-server
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
     env_file:
       - .env
     environment:
@@ -10,12 +9,63 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-    ports:
-      - "3306:3306"
+    networks:
+      - wpnet
     restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    build: ./requirements/wordpress     # Dockerfile dentro da pasta wordpress
+    container_name: wordpress
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+    depends_on:
+      - mariadb
+    networks:
+      - wpnet
+    restart: always
+    volumes:
+      - wp_data:/var/www/wordpress
+
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - wordpress
+    networks:
+      - wpnet
+    restart: always
+    volumes:
+      - wp_data:/var/www/html
+
+networks:
+  wpnet:
+    driver: bridge
+
+volumes:
+  db_data:
+    driver: local # Or your specific driver
+    driver_opts: # Correct indentation here
+      o: bind
+      type: none
+      device: "/home/erramos/data/db_data"
+
+  wp_data:
+    driver: local # Or your specific driver
+    driver_opts: # Correct indentation here
+      o: bind
+      type: none
+      device: "/home/erramos/data/wp_data"
+
 
 secrets:
-   db_password:
-     file: db_password.txt
-   db_root_password:
-     file: db_root_password.txt
+  db_password:
+    file: db_password.txt
+  db_root_password:
+    file: db_root_password.txt

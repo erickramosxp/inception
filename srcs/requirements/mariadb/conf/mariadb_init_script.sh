@@ -3,12 +3,19 @@
 FORBIDDEN_USERS=("admin" "Admin" "administrator" "Administrator")
 SOCKET="/var/run/mysqld/mysqld.sock"
 MYSQLCLI="mysql --protocol=socket --socket=$SOCKET -uroot"
+MARKER="/var/lib/mysql/.initialized"
 
 set -e
 
 ROOT_AUTH=""
 if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
     ROOT_AUTH="-p${MYSQL_ROOT_PASSWORD}"
+fi
+
+# se já inicializou, só inicia o servidor
+if [ -f "$MARKER" ]; then
+  echo "[init] Já inicializado anteriormente, apenas subindo MariaDB..."
+  exec mysqld_safe --datadir=/var/lib/mysql
 fi
 
 # inicia servidor em background
@@ -47,7 +54,6 @@ if [ -n "${MYSQL_DATABASE:-}" ]; then
 EOSQL
 fi
 
-
 if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
 	${MYSQLCLI} <<-EOSQL
   	ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
@@ -61,6 +67,9 @@ if [ -n "${MYSQL_USER:-}" ] && [ -n "${MYSQL_PASSWORD:-}" ]; then
 fi
 
 mysqladmin --protocol=socket --socket=$SOCKET -uroot -p${MYSQL_ROOT_PASSWORD} shutdown
+
+# marca que já inicializou
+touch "$MARKER"
 
 echo "[init] Finalizado, iniciando o servidor MariaDB..."
 exec mysqld_safe --datadir=/var/lib/mysql
