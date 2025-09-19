@@ -1,7 +1,18 @@
 certbot --nginx --non-interactive --agree-tos --domains example.com --email webmaster@example.com
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
 
+arquivo conf nginx
+
+/etc/nginx/nginx.conf
 
 arquivo conf do php-fpm
 
+/etc/php/8.2/fpm/php-fpm.conf
 
+arquivo conf pool.d do php-fpm
+
+/etc/php/8.2/fpm/pool.d/www.conf
+
+arquivo conf mariadb
+
+/etc/mysql/mariadb.cnf
