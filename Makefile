@@ -9,7 +9,7 @@ SERVICE?=wordpress
 up:
 	@mkdir -p /home/$(USER)/data/db_data
 	@mkdir -p /home/$(USER)/data/wp_data
-	@docker compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) up -d
+	@docker compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) up -d --build
 
 # Stop and remove all services
 down:

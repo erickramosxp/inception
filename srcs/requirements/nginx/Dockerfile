@@ -12,5 +12,4 @@ RUN chmod +x /usr/local/bin/startup-nginx.sh
 
 EXPOSE 443
 
-
 CMD ["/usr/local/bin/startup-nginx.sh"]

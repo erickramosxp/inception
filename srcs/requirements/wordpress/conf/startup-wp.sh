@@ -4,19 +4,25 @@ MARKED=.initialized
 
 set -e
 
+echo "Check db connection..."
+
 until wait-for-it mariadb:3306 --quiet; do
     echo "Waiting for MariaDB to accept connections..."
     sleep 2
 done
 
+echo "DB is ready!"
 
 if [ ! -f "$MARKED" ]; then
+
+    echo "Setting initial configuration..."
 
     wp config set DB_NAME "${WORDPRESS_DB_NAME}" --type=constant > /dev/null 2>&1
     wp config set DB_USER "${WORDPRESS_DB_USER}" --type=constant > /dev/null 2>&1
     wp config set DB_PASSWORD "${WORDPRESS_DB_PASSWORD}" --type=constant > /dev/null 2>&1
     wp config set DB_HOST "${WORDPRESS_DB_HOST}" --type=constant > /dev/null 2>&1
 
+    echo "Setting admin user configuration..."
     wp core install \
     --url="https://${WORDPRESS_URL}" \
     --title="Inception" \
@@ -26,16 +32,14 @@ if [ ! -f "$MARKED" ]; then
     --locale="${WORDPRESS_LOCALE}" \
     > /dev/null 2>&1
 
-    if [ -n "${WORDPRESS_LOCALE:-}" ] && [ ! -f "$WORDPRESS_LOCALE" ]; then
-        wp language core install "$WORDPRESS_LOCALE"
-        wp site switch-language "$WORDPRESS_LOCALE"
-        wp config set WPLANG "$WORDPRESS_LOCALE"
-    fi
-
+    echo "Setting comment configuration..."
     wp option update comment_moderation 0 
     wp option update comment_previously_approved 0
+    
+    echo "Setting inicialization flag..."
+    touch "$MARKED"
 fi
 
-touch "$MARKED"
+echo "Starting WordPress..."
 
 exec php-fpm8.2 -F

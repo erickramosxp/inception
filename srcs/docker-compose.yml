@@ -1,5 +1,6 @@
 services:
   mariadb:
+    image: mariadb
     build: ./requirements/mariadb
     container_name: mariadb
     env_file:
@@ -16,6 +17,7 @@ services:
       - db_data:/var/lib/mysql
 
   wordpress:
+    image: wordpress
     build: ./requirements/wordpress     # Dockerfile dentro da pasta wordpress
     container_name: wordpress
     environment:
@@ -27,7 +29,6 @@ services:
       WORDPRESS_ADMIN_USER: ${WORDPRESS_ADMIN_USER}
       WORDPRESS_ADMIN_PASSWORD: ${WORDPRESS_ADMIN_PASSWORD}
       WORDPRESS_ADMIN_EMAIL: ${WORDPRESS_ADMIN_EMAIL}
-      WORDPRESS_LOCALE: ${WORDPRESS_LOCALE}
     depends_on:
       - mariadb
     networks:
@@ -37,6 +38,7 @@ services:
       - wp_data:/var/www/html
 
   nginx:
+    image: nginx
     build: ./requirements/nginx
     container_name: nginx
     ports:
