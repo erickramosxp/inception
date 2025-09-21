@@ -7,7 +7,8 @@ RUN apt-get update \
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
 COPY ./conf/mariadb_init_script.sh /usr/local/bin/init-script.sh
-RUN chmod +x /usr/local/bin/init-script.sh
+RUN chmod +x /usr/local/bin/init-script.sh \
+	&& chmod 644 /etc/mysql/mariadb.conf.d/50-server.cnf
 
 LABEL description="MariaDB Server"
 

@@ -29,6 +29,7 @@ WORKDIR /var/www/html
 COPY ./conf/wp-config.php /var/www/html/wp-config.php
 COPY ./tools/wait-for-it.sh /bin/wait-for-it
 COPY ./conf/startup-wp.sh /var/www/html/startup-wp.sh
+COPY ./conf/www.conf /etc/php/8.2/fpm/pool.d/www.conf
 
 RUN chmod +x /var/www/html/startup-wp.sh \
     && chmod +x /bin/wait-for-it \
