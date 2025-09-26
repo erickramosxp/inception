@@ -7,7 +7,7 @@ Um projeto completo de containerização Docker que demonstra a criação de ima
 Este projeto implementa uma arquitetura de microserviços containerizada com três componentes principais:
 
 - **WordPress** - CMS personalizado em container próprio
-- **MySQL** - Banco de dados em container isolado  
+- **MySQL** - Banco de dados em container isolado
 - **NGINX** - Servidor web reverso como ponto de entrada único
 
 ### 🏗️ Arquitetura
@@ -27,7 +27,9 @@ Este projeto implementa uma arquitetura de microserviços containerizada com tr�
 ## 🐋 Sobre as Imagens Docker
 
 ### Base das Imagens
+
 Todas as imagens são construídas a partir do **Debian 11 (Bullseye)**, a versão penúltima do Debian, garantindo:
+
 - Estabilidade comprovada
 - Amplo suporte da comunidade
 - Compatibilidade com pacotes essenciais
@@ -36,6 +38,7 @@ Todas as imagens são construídas a partir do **Debian 11 (Bullseye)**, a vers�
 ### Imagens Customizadas
 
 #### 🌐 NGINX
+
 - **Base**: `debian:bullseye`
 - **Função**: Servidor web reverso e ponto de entrada único
 - **Portas Expostas**: 80, 443 (única imagem com portas expostas ao host)
@@ -46,6 +49,7 @@ Todas as imagens são construídas a partir do **Debian 11 (Bullseye)**, a vers�
   - Load balancing (se necessário)
 
 #### 📝 WordPress
+
 - **Base**: `debian:bullseye`
 - **Função**: Sistema de gerenciamento de conteúdo
 - **Rede**: Comunicação interna apenas
@@ -56,6 +60,7 @@ Todas as imagens são construídas a partir do **Debian 11 (Bullseye)**, a vers�
   - Conexão com banco de dados
 
 #### 🗄️ MySQL
+
 - **Base**: `debian:bullseye`
 - **Função**: Sistema de gerenciamento de banco de dados
 - **Rede**: Comunicação interna apenas
@@ -67,6 +72,7 @@ Todas as imagens são construídas a partir do **Debian 11 (Bullseye)**, a vers�
 ## 🚀 Configuração e Uso
 
 ### Pré-requisitos
+
 - Docker Engine 20.10+
 - Docker Compose 2.0+
 - Git
@@ -74,41 +80,42 @@ Todas as imagens são construídas a partir do **Debian 11 (Bullseye)**, a vers�
 ### Instalação
 
 1. **Clone o repositório**
+
    ```bash
    git clone https://github.com/erickramosxp/inception.git
    cd inception
    ```
-
 2. **Construa as imagens**
-   ```bash
-   docker-compose build
-   ```
 
+   ```bash
+   make build
+   ```
 3. **Inicie os serviços**
-   ```bash
-   docker-compose up -d
-   ```
 
+   ```bash
+   make up
+   ```
 4. **Acesse a aplicação**
-   - WordPress: `http://localhost`
-   - Admin WordPress: `http://localhost/wp-admin`
+
+   - WordPress: `http://<SERVER_NAME>`
+   - Admin WordPress: `http://<SERVER_NAME>/wp-admin`
 
 ### Comandos Úteis
 
 ```bash
 # Visualizar logs dos containers
-docker-compose logs -f
+make logs
 
 # Parar todos os serviços
-docker-compose down
+make down
 
 # Reconstruir e reiniciar
 docker-compose down && docker-compose build && docker-compose up -d
 
 # Acessar shell de um container
-docker-compose exec nginx bash
-docker-compose exec wordpress bash
-docker-compose exec mysql bash
+make shell SERVICE=nginx
+make shell SERVICE=wordpress
+make shell SERVICE=mysql
 
 # Verificar status dos containers
 docker-compose ps
@@ -121,39 +128,60 @@ docker stats
 
 ```
 inception/
+├── Makefile
 ├── README.md
-├── docker-compose.yml          # Orquestração dos serviços
-├── .env                        # Variáveis de ambiente
-├── nginx/
-│   ├── Dockerfile             # Imagem customizada NGINX
-│   ├── nginx.conf             # Configuração do servidor
-│   └── ssl/                   # Certificados SSL
-├── wordpress/
-│   ├── Dockerfile             # Imagem customizada WordPress
-│   ├── php.ini                # Configuração PHP
-│   └── wp-config.php          # Configuração WordPress
-├── mysql/
-│   ├── Dockerfile             # Imagem customizada MySQL
-│   ├── my.cnf                 # Configuração MySQL
-│   └── init/                  # Scripts de inicialização
-└── volumes/
-    ├── mysql_data/            # Dados persistentes MySQL
-    └── wordpress_data/        # Arquivos WordPress
+├── create_folders.sh
+├── secrets
+│   ├── credentials.txt
+│   ├── db_password.txt
+│   └── db_root_password.txt
+└── srcs
+    ├── docker-compose.yml		# Orquestração dos serviços
+    ├── .env 				# Variáveis de ambiente
+    └── requirements
+        ├── mariadb
+        │   ├── Dockerfile		# Imagem customizada MySQL
+        │   ├── conf
+        │   │   ├── 50-server.cnf
+        │   │   ├── mariadb.cnf
+        │   │   ├── mariadb_init_script.sh
+        │   │   └── requirements.txt
+        │   └── tools
+        ├── nginx
+        │   ├── Dockerfile		# Imagem customizada NGINX
+        │   ├── conf
+        │   │   ├── default
+        │   │   ├── nginx.conf		# Configuração do servidor
+        │   │   └── startup-nginx.sh
+        │   └── tools
+        ├── tools
+        └── wordpress
+            ├── Dockerfile		# Imagem customizada WordPress
+            ├── conf
+            │   ├── php-fpm.conf
+            │   ├── startup-wp.sh
+            │   ├── wp-config.php	# Configuração WordPress
+            │   └── www.conf
+            └── tools
+                └── wait-for-it.sh
 ```
 
 ## 🔒 Segurança
 
 ### Isolamento de Rede
+
 - Apenas o NGINX tem portas expostas ao host
 - WordPress e MySQL comunicam através de rede interna Docker
 - Containers isolados em rede bridge customizada
 
 ### Variáveis de Ambiente
+
 - Senhas e chaves em arquivo `.env`
 - Credenciais não expostas em código
 - Rotação periódica recomendada
 
 ### Volumes Persistentes
+
 - Dados MySQL em volume dedicado
 - Arquivos WordPress em volume separado
 - Backup regular dos volumes recomendado
@@ -163,25 +191,27 @@ inception/
 O Docker Compose é utilizado para:
 
 ### Orquestração de Serviços
+
 - Definição declarativa da infraestrutura
 - Gerenciamento de dependências entre containers
 - Configuração de rede interna
 - Mapeamento de volumes persistentes
 
 ### Benefícios
+
 - **Simplicidade**: Um comando para todo o ambiente
 - **Reprodutibilidade**: Ambiente idêntico em qualquer máquina
 - **Escalabilidade**: Fácil adição de novos serviços
 - **Manutenibilidade**: Configuração centralizada
 
 ### Exemplo de Configuração
+
 ```yaml
 version: '3.8'
 services:
   nginx:
     build: ./nginx
     ports:
-      - "80:80"
       - "443:443"
     depends_on:
       - wordpress
@@ -214,11 +244,13 @@ volumes:
 ## 📊 Monitoramento
 
 ### Logs
+
 - Logs centralizados via Docker Compose
 - Rotação automática de logs
 - Níveis de log configuráveis
 
 ### Métricas
+
 - Uso de CPU e memória via `docker stats`
 - Monitoramento de disco dos volumes
 - Health checks para cada serviço
@@ -226,6 +258,7 @@ volumes:
 ## 🛠️ Desenvolvimento
 
 ### Ambiente de Desenvolvimento
+
 ```bash
 # Modo desenvolvimento com hot reload
 docker-compose -f docker-compose.dev.yml up
@@ -236,6 +269,7 @@ docker-compose exec wordpress bash
 ```
 
 ### Testes
+
 ```bash
 # Teste de conectividade
 docker-compose exec nginx curl -I http://wordpress
@@ -252,6 +286,7 @@ docker-compose exec nginx ab -n 100 -c 10 http://wordpress/
 ### Problemas Comuns
 
 #### Container não inicia
+
 ```bash
 # Verificar logs
 docker-compose logs [service_name]
@@ -264,6 +299,7 @@ docker-compose build --no-cache [service_name]
 ```
 
 #### Problemas de conectividade
+
 ```bash
 # Verificar rede
 docker network ls
@@ -275,6 +311,7 @@ docker-compose exec wordpress ping mysql
 ```
 
 #### Problemas de performance
+
 ```bash
 # Monitorar recursos
 docker stats
@@ -288,6 +325,7 @@ docker-compose logs mysql | grep error
 ## 🔄 Backup e Recuperação
 
 ### Backup dos Dados
+
 ```bash
 # Backup MySQL
 docker-compose exec mysql mysqldump -u root -p wordpress > backup.sql
@@ -297,6 +335,7 @@ docker run --rm -v inception_mysql_data:/data -v $(pwd):/backup ubuntu tar czf /
 ```
 
 ### Recuperação
+
 ```bash
 # Restaurar MySQL
 docker-compose exec -T mysql mysql -u root -p wordpress < backup.sql
@@ -308,11 +347,13 @@ docker run --rm -v inception_mysql_data:/data -v $(pwd):/backup ubuntu tar xzf /
 ## 📚 Recursos Adicionais
 
 ### Documentação
+
 - [Docker Official Documentation](https://docs.docker.com/)
 - [Docker Compose Reference](https://docs.docker.com/compose/)
 - [Debian Official Images](https://hub.docker.com/_/debian)
 
 ### Melhores Práticas
+
 - [Docker Best Practices](https://docs.docker.com/develop/best-practices/)
 - [Dockerfile Best Practices](https://docs.docker.com/develop/dev-best-practices/)
 - [Security Best Practices](https://docs.docker.com/engine/security/)
@@ -332,6 +373,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ## ✨ Autor
 
 **Erick Ramos**
+
 - GitHub: [@erickramosxp](https://github.com/erickramosxp)
 
 ---

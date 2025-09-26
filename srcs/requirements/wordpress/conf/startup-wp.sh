@@ -1,5 +1,6 @@
 #!/bin/bash
 
+FORBIDDEN_USERS=("admin" "Admin" "administrator" "Administrator")
 MARKED=.initialized
 
 set -e
@@ -13,6 +14,21 @@ done
 
 echo "DB is ready!"
 
+valid_user() {
+  local user=$1
+
+  for forbidden in "${FORBIDDEN_USERS[@]}"; do
+    if [[ "$user" == *"$forbidden"* ]]; then
+      echo "ERRO: username: '$user' contains '$forbidden', not allowed!"
+      return 1
+    fi
+  done
+    return 0
+}
+
+
+
+
 if [ ! -f "$MARKED" ]; then
 
     echo "Setting initial configuration..."
@@ -23,6 +39,10 @@ if [ ! -f "$MARKED" ]; then
     wp config set DB_HOST "${WORDPRESS_DB_HOST}" --type=constant > /dev/null 2>&1
 
     echo "Setting admin user configuration..."
+
+    if ! valid_user "${WORDPRESS_ADMIN_USER}" || ! valid_user "${WORDPRESS_USER}"; then
+        exit 1
+    fi
     wp core install \
     --url="https://${WORDPRESS_URL}" \
     --title="Inception" \
@@ -31,6 +51,12 @@ if [ ! -f "$MARKED" ]; then
     --admin_email="${WORDPRESS_ADMIN_EMAIL}" \
     --locale="${WORDPRESS_LOCALE}" \
     > /dev/null 2>&1
+
+    wp user create \
+    "${WORDPRESS_USER}" \
+    "${WORDPRESS_EMAIL}" \
+    --user_pass="${WORDPRESS_PASSWORD}" \
+    --role=subscriber
 
     echo "Setting comment configuration..."
     wp option update comment_moderation 0 

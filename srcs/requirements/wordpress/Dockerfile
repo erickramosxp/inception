@@ -1,7 +1,7 @@
 FROM debian:12
 
 RUN apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends\
     php \
     php-mysql \
     php-xml \
@@ -9,17 +9,12 @@ RUN apt-get update \
     php-curl \
     php8.2-fpm \
     wget \
-	&& rm -rf /var/lib/apt/lists/*
-
-RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    ca-certificates \
+	&& rm -rf /var/lib/apt/lists/* \
+    && wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod +x wp-cli.phar \
-    && mv wp-cli.phar /usr/local/bin/wp
-
-# RUN adduser --system --no-create-home --group www-data
-
-RUN id www-data && groups www-data
-
-RUN wget https://wordpress.org/latest.tar.gz \
+    && mv wp-cli.phar /usr/local/bin/wp \
+    && wget https://wordpress.org/latest.tar.gz \
     && tar -xvf latest.tar.gz \
     && rm -rf latest.tar.gz \
     && mkdir -p /var/www/html/ \
