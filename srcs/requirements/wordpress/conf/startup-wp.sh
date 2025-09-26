@@ -5,14 +5,9 @@ MARKED=.initialized
 
 set -e
 
-echo "Check db connection..."
-
-until wait-for-it mariadb:3306 --quiet; do
-    echo "Waiting for MariaDB to accept connections..."
-    sleep 2
-done
-
-echo "DB is ready!"
+check_port() {
+  (echo > /dev/tcp/mariadb/3306) >/dev/null 2>&1
+}
 
 valid_user() {
   local user=$1
@@ -26,7 +21,14 @@ valid_user() {
     return 0
 }
 
+echo "Check db connection..."
 
+until check_port; do
+    echo "Waiting for MariaDB to accept connections..."
+    sleep 2
+done
+
+echo "DB is ready!"
 
 
 if [ ! -f "$MARKED" ]; then
@@ -43,13 +45,13 @@ if [ ! -f "$MARKED" ]; then
     if ! valid_user "${WORDPRESS_ADMIN_USER}" || ! valid_user "${WORDPRESS_USER}"; then
         exit 1
     fi
+    
     wp core install \
     --url="https://${WORDPRESS_URL}" \
     --title="Inception" \
     --admin_user="${WORDPRESS_ADMIN_USER}" \
     --admin_password="${WORDPRESS_ADMIN_PASSWORD}" \
-    --admin_email="${WORDPRESS_ADMIN_EMAIL}" \
-    --locale="${WORDPRESS_LOCALE}" \
+    --admin_email="${WORDPRESS_ADMIN_EMAIL}"
     > /dev/null 2>&1
 
     wp user create \
@@ -58,9 +60,9 @@ if [ ! -f "$MARKED" ]; then
     --user_pass="${WORDPRESS_PASSWORD}" \
     --role=subscriber
 
-    echo "Setting comment configuration..."
-    wp option update comment_moderation 0 
-    wp option update comment_previously_approved 0
+    # echo "Setting comment configuration..."
+    # wp option update comment_moderation 0 
+    # wp option update comment_previously_approved 0
     
     echo "Setting inicialization flag..."
     touch "$MARKED"

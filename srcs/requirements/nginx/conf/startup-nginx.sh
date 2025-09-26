@@ -30,4 +30,4 @@ if [ ! -f "$MARKED" ]; then
     touch "$MARKED"
 fi
 
-exec nginx -g "daemon off;"
+exec "$@"

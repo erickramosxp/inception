@@ -17,7 +17,7 @@ services:
       - db_data:/var/lib/mysql
 
   wordpress:
-    build: ./requirements/wordpress     # Dockerfile dentro da pasta wordpress
+    build: ./requirements/wordpress
     image: wordpress:inception
     container_name: wordpress
     environment:
