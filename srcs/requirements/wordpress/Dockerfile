@@ -41,4 +41,6 @@ USER www-data
 
 EXPOSE 9000
 
-CMD ["bash", "./startup-wp.sh"]
+ENTRYPOINT ["./startup-wp.sh"]
+
+CMD ["php-fpm8.2", "-F"]

@@ -4,16 +4,16 @@ MARKED=.initialized
 
 set -e
 
-check_port() {
-  (echo > /dev/tcp/wordpress/9000) >/dev/null 2>&1
-}
+# check_port() {
+#   (echo > /dev/tcp/wordpress/9000) >/dev/null 2>&1
+# }
 
-until check_port; do
-  echo "⏳ Aguardando o WordPress ficar pronto..."
-  sleep 5
-done
+# until check_port; do
+#   echo "⏳ Aguardando o WordPress ficar pronto..."
+#   sleep 5
+# done
 
-echo "✅ WordPress está pronto!"
+# echo "✅ WordPress está pronto!"
 
 if [ ! -f "$MARKED" ]; then
 

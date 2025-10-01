@@ -68,8 +68,11 @@ fi
 
 mysqladmin --protocol=socket --socket=$SOCKET -uroot -p${MYSQL_ROOT_PASSWORD} shutdown
 
+mkdir -p /var/run/mysqld
+chown mysql /var/run/mysqld
+
 # marca que já inicializou
 touch "$MARKER"
 
 echo "[init] Finalizado, iniciando o servidor MariaDB..."
-exec mysqld_safe --datadir=/var/lib/mysql
+exec "$@"

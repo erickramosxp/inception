@@ -14,4 +14,8 @@ LABEL description="MariaDB Server"
 
 EXPOSE 3306
 
-CMD ["bash", "/usr/local/bin/init-script.sh"]
+ENTRYPOINT ["/usr/local/bin/init-script.sh"]
+
+# USER mysql
+
+CMD ["mysqld_safe", "--datadir=/var/lib/mysql"]

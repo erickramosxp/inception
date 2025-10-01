@@ -70,4 +70,4 @@ fi
 
 echo "Starting WordPress..."
 
-exec php-fpm8.2 -F
+exec "$@"
