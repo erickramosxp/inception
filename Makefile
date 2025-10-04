@@ -39,14 +39,15 @@ clean:
 	@docker compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) down --rmi all -v
 	
 
-
 fclean: down
 	@echo "[ - ] Shutting down containers and cleaning everything..."
 	@docker compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) down --rmi all -v
 	@echo "[✔  ] Containers, images and volumes removed"
 	@echo "[ - ] Removing local data..."
-	@bash -c "sudo rm -rf /home/$(USER)/data/db_data /home/$(USER)/data/wp_data"
+	@bash -c "sudo rm -rf /home/$(USER)/data/db_data /home/$(USER)/data/wp_data /home/$(USER)/data"
 	@echo "[✔  ] Removing local data..."
+
+re: fclean up
 
     # Display available commands
 help:

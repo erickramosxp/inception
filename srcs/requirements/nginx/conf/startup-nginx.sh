@@ -1,19 +1,25 @@
 #!/bin/bash
 
-MARKED=.initialized
+MARKED=/etc/nginx/.initialized
 
 set -e
 
-check_port() {
-  (echo > /dev/tcp/wordpress/9000) >/dev/null 2>&1
-}
+# check_port() {
+#   (echo > /dev/tcp/wordpress/9000) >/dev/null 2>&1
+# }
 
-until check_port; do
-  echo "⏳ Aguardando o WordPress ficar pronto..."
-  sleep 5
-done
 
-echo "✅ WordPress está pronto!"
+# until check_port; do
+#   echo "⏳ Waiting for WordPress to be ready..."
+#   sleep 2
+# done
+
+# echo "✅ WordPress is ready!"
+
+if [ -f "$MARKED" ]; then
+  exec "$@"
+fi
+
 
 if [ ! -f "$MARKED" ]; then
 
@@ -25,9 +31,10 @@ if [ ! -f "$MARKED" ]; then
         -out "/etc/nginx/ssl/${SERVER_NAME}.crt" \
         -subj "/CN=${SERVER_NAME}"
 
+
     sed "s/\$SERVER_NAME/${SERVER_NAME}/g" /etc/nginx/sites-available/default.template > /etc/nginx/sites-available/default
 
     touch "$MARKED"
 fi
 
-exec nginx -g "daemon off;"
+exec "$@"

@@ -1,0 +1,26 @@
+mysqld: Can't create file '/dev/stderr.err' (errno: 13 "Permission denied")
+2025-10-03 20:52:10 0 [Note] Starting MariaDB 10.11.14-MariaDB-0+deb12u2-log source revision 053f9bcb5b147bf00edb99e1310bae9125b7f125 server_uid tE/ww1G4LeNWoyr5XOXVJunqYN4= as process 1
+2025-10-03 20:52:10 0 [Note] InnoDB: Compressed tables use zlib 1.2.13
+2025-10-03 20:52:10 0 [Note] InnoDB: Number of transaction pools: 1
+2025-10-03 20:52:10 0 [Note] InnoDB: Using crc32 + pclmulqdq instructions
+2025-10-03 20:52:10 0 [Note] mysqld: O_TMPFILE is not supported on /tmp (disabling future attempts)
+2025-10-03 20:52:10 0 [Warning] mysqld: io_uring_queue_init() failed with EPERM: sysctl kernel.io_uring_disabled has the value 2, or 1 and the user of the process is not a member of sysctl kernel.io_uring_group. (see man 2 io_uring_setup).
+create_uring failed: falling back to libaio
+2025-10-03 20:52:10 0 [Note] InnoDB: native AIO failed: falling back to innodb_use_native_aio=OFF
+2025-10-03 20:52:10 0 [Note] InnoDB: innodb_buffer_pool_size_max=128m, innodb_buffer_pool_size=128m
+2025-10-03 20:52:10 0 [Note] InnoDB: Completed initialization of buffer pool
+2025-10-03 20:52:10 0 [Note] InnoDB: File system buffers for log disabled (block size=512 bytes)
+2025-10-03 20:52:10 0 [Note] InnoDB: End of log at LSN=46846
+2025-10-03 20:52:10 0 [Note] InnoDB: 128 rollback segments are active.
+2025-10-03 20:52:10 0 [Note] InnoDB: Setting file './ibtmp1' size to 12.000MiB. Physically writing the file full; Please wait ...
+2025-10-03 20:52:10 0 [Note] InnoDB: File './ibtmp1' size is now 12.000MiB.
+2025-10-03 20:52:10 0 [Note] InnoDB: log sequence number 46846; transaction id 14
+2025-10-03 20:52:10 0 [Note] Plugin 'FEEDBACK' is disabled.
+2025-10-03 20:52:10 0 [Note] InnoDB: Loading buffer pool(s) from /var/lib/mysql/ib_buffer_pool
+2025-10-03 20:52:10 0 [Warning] You need to use --log-bin to make --expire-logs-days or --binlog-expire-logs-seconds work.
+2025-10-03 20:52:10 0 [Note] Server socket created on IP: '0.0.0.0', port: '3306'.
+2025-10-03 20:52:10 0 [Note] InnoDB: Buffer pool(s) load completed at 251003 20:52:10
+2025-10-03 20:52:10 0 [Note] mysqld: ready for connections.
+Version: '10.11.14-MariaDB-0+deb12u2-log'  socket: '/run/mysqld/mysqld.sock'  port: 3306  Debian 12
+
+mysqld --verbose --help | grep log_error

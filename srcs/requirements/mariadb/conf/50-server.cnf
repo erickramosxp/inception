@@ -61,8 +61,9 @@ bind-address            = 0.0.0.0
 # Enable this if you want to have error logging into a separate file
 #log_error = /var/log/mysql/error.log
 # Enable the slow query log to see queries with especially long duration
-#log_slow_query_file    = /var/log/mysql/mariadb-slow.log
-#log_slow_query_time    = 10
+slow_query_log = 1
+log_slow_query_file    = /var/log/mysql/mariadb-slow.log
+log_slow_query_time    = 2
 #log_slow_verbosity     = query_plan,explain
 #log-queries-not-using-indexes
 #log_slow_min_examined_row_limit = 1000
@@ -112,7 +113,8 @@ collation-server      = utf8mb4_general_ci
 # If you use the same .cnf file for MySQL and MariaDB,
 # you can put MariaDB-only options here
 [mariadb]
-
+log_error = /proc/self/fd/2
+log_warnings = 1
 # This group is only read by MariaDB-10.11 servers.
 # If you use the same .cnf file for MariaDB of different versions,
 # use this group for options that older servers don't understand

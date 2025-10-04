@@ -5,14 +5,14 @@ MARKED=.initialized
 
 set -e
 
-echo "Check db connection..."
+# echo "Check db connection..."
 
-until wait-for-it mariadb:3306 --quiet; do
-    echo "Waiting for MariaDB to accept connections..."
-    sleep 2
-done
+# until wait-for-it mariadb:3306 --quiet; do
+#     echo "Waiting for MariaDB to accept connections..."
+#     sleep 2
+# done
 
-echo "DB is ready!"
+# echo "DB is ready!"
 
 valid_user() {
   local user=$1
@@ -25,8 +25,6 @@ valid_user() {
   done
     return 0
 }
-
-
 
 
 if [ ! -f "$MARKED" ]; then
@@ -57,10 +55,6 @@ if [ ! -f "$MARKED" ]; then
     "${WORDPRESS_EMAIL}" \
     --user_pass="${WORDPRESS_PASSWORD}" \
     --role=subscriber
-
-    echo "Setting comment configuration..."
-    wp option update comment_moderation 0 
-    wp option update comment_previously_approved 0
     
     echo "Setting inicialization flag..."
     touch "$MARKED"
@@ -68,4 +62,4 @@ fi
 
 echo "Starting WordPress..."
 
-exec php-fpm8.2 -F
+exec "$@"
