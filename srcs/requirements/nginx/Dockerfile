@@ -24,6 +24,3 @@ EXPOSE 443
 ENTRYPOINT ["/usr/local/bin/startup-nginx.sh"]
 
 CMD ["nginx", "-g", "daemon off;"]
-ENTRYPOINT ["/usr/local/bin/startup-nginx.sh"]
-
-CMD ["nginx", "-g", "daemon off;"]
