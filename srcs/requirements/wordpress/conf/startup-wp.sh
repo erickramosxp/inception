@@ -41,13 +41,13 @@ if [ ! -f "$MARKED" ]; then
     if ! valid_user "${WORDPRESS_ADMIN_USER}" || ! valid_user "${WORDPRESS_USER}"; then
         exit 1
     fi
+    
     wp core install \
     --url="https://${WORDPRESS_URL}" \
     --title="Inception" \
     --admin_user="${WORDPRESS_ADMIN_USER}" \
     --admin_password="${WORDPRESS_ADMIN_PASSWORD}" \
-    --admin_email="${WORDPRESS_ADMIN_EMAIL}" \
-    --locale="${WORDPRESS_LOCALE}" \
+    --admin_email="${WORDPRESS_ADMIN_EMAIL}"
     > /dev/null 2>&1
 
     wp user create \
@@ -62,4 +62,5 @@ fi
 
 echo "Starting WordPress..."
 
+exec "$@"
 exec "$@"

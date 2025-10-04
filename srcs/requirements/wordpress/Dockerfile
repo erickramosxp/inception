@@ -8,6 +8,7 @@ RUN apt-get update \
     php-mbstring \
     php-curl \
     php8.2-fpm \
+    sendmail \
     wget \
     ca-certificates \
 	&& rm -rf /var/lib/apt/lists/* \
@@ -41,5 +42,7 @@ USER www-data
 EXPOSE 9000
 
 ENTRYPOINT ["./startup-wp.sh"]
+
+CMD ["php-fpm8.2", "-F"]
 
 CMD ["php-fpm8.2", "-F"]

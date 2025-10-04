@@ -55,7 +55,8 @@ server {
         # proxy_set_header X-Forwarded-Proto $scheme;
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
-		try_files $uri $uri/ =404;
+		try_files $uri $uri/ /index.php?$args;
+		# try_files $uri $uri/ =404;
 	}
 
 	# pass PHP scripts to FastCGI server
@@ -79,11 +80,11 @@ server {
 	#}
 }
 
-server {
-    listen 80;
-    server_name erramos.42.fr;
-    return 301 https://$host$request_uri;
-}
+# server {
+#     listen 80;
+#     server_name erramos.42.fr;
+#     return 301 https://$host$request_uri;
+# }
 
 
 

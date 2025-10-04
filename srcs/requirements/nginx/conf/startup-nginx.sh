@@ -7,6 +7,9 @@ set -e
 # check_port() {
 #   (echo > /dev/tcp/wordpress/9000) >/dev/null 2>&1
 # }
+# check_port() {
+#   (echo > /dev/tcp/wordpress/9000) >/dev/null 2>&1
+# }
 
 
 # until check_port; do
@@ -37,4 +40,5 @@ if [ ! -f "$MARKED" ]; then
     touch "$MARKED"
 fi
 
+exec "$@"
 exec "$@"
