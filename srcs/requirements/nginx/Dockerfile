@@ -1,7 +1,5 @@
 FROM debian:12
 
-# USER root
-
 RUN apt-get -y update \
     && apt-get -y install nginx \
     && apt-get -y install openssl \
@@ -17,7 +15,8 @@ RUN chmod +x /usr/local/bin/startup-nginx.sh \
     && touch /var/log/nginx.log \
     && chown -R www-data:www-data \
     /var/log/nginx.log \
-    /etc/nginx
+    /etc/nginx \
+    && ln -sf /proc/self/fd/2 /var/log/nginx/access.log
 
 EXPOSE 443
 

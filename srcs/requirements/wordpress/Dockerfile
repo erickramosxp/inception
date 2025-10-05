@@ -34,7 +34,8 @@ RUN chmod 755 /var/www/html/startup-wp.sh \
     && chmod 755 /bin/wait-for-it \
     && touch /var/log/php8.2-fpm.log \
     && chown www-data:www-data /var/log/php8.2-fpm.log \
-    && chmod 664 /var/log/php8.2-fpm.log
+    && chmod 664 /var/log/php8.2-fpm.log \
+    && ln -sf /proc/self/fd/2 /var/log/php8.2-fpm.log
 
 USER www-data
 

@@ -91,6 +91,9 @@ define('WP_DEBUG_LOG', true);
 define('WP_DEBUG_DISPLAY', false);
 define('SCRIPT_DEBUG', true);
 define('SAVEQUERIES', true);
+ini_set('log_errors', 1);
+ini_set('error_log', '/proc/self/fd/2');
+#@init_set('display_errors', 0);
 /* Add any custom values between this line and the "stop editing" line. */
 
 

@@ -23,11 +23,13 @@ mysqld_safe --datadir=/var/lib/mysql --skip-networking --socket=$SOCKET &
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
 
+  # da ping no mysql para ver se já subiu
   if mysqladmin ping --socket=$SOCKET --silent; then
     echo "[init] MariaDB is ready for initial configuration!"
     break
   fi
 
+  # conta as tentativas, se chegar a 30 da erro 
   ATTEMPT=$((ATTEMPT + 1))
   echo "⏳ Connecting to mariadb, attempt $ATTEMPT/$MAX_ATTEMPTS..."
   sleep 2
@@ -44,6 +46,7 @@ create_user_if_valid() {
   local pass=$2
   local db=$3
 
+  # verifica se o usuario tem admin no nome
   for forbidden in "${FORBIDDEN_USERS[@]}"; do
     if [[ "$user" == *"$forbidden"* ]]; then
       echo "ERRO: username: '$user' contains '$forbidden', not allowed!"
@@ -51,7 +54,7 @@ create_user_if_valid() {
     fi
   done
 
-  # cria usuário no banco
+  # cria usuario no banco
   mysql ${MYSQL_ARGS} --protocol=socket --socket=$SOCKET  <<-EOSQL
     CREATE USER IF NOT EXISTS '${user}'@'%' IDENTIFIED BY '${pass}';
     GRANT ALL PRIVILEGES ON \`${db}\`.* TO '${user}'@'%';
@@ -60,6 +63,7 @@ EOSQL
   echo "[init] User '${user}' was create."
 }
 
+# configura senha do usuario root
 if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
 	${MYSQLCLI} <<-EOSQL
   	ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
@@ -69,7 +73,7 @@ if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
 EOSQL
 fi
 
-
+# cria database
 if [ -n "${MYSQL_DATABASE:-}" ]; then
     mysql ${MYSQL_ARGS} --protocol=socket --socket=$SOCKET <<-EOSQL
       CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
@@ -82,13 +86,11 @@ if [ -n "${MYSQL_USER:-}" ] && [ -n "${MYSQL_PASSWORD:-}" ]; then
   create_user_if_valid "$MYSQL_USER" "$MYSQL_PASSWORD" "${MYSQL_DATABASE:-*}"
 fi
 
+# desliga o servidor temporario
 mysqladmin ${MYSQL_ARGS} --socket=$SOCKET shutdown
 
 # marca que já inicializou
 touch "$MARKER"
-
-# ln -sf /dev/stdout /var/log/mysql/mariadb-slow.log
-# ln -sf /dev/stderr /var/log/mysql/error.log
 
 echo "[init] Done, starting the MariaDB server..."
 exec gosu mysql "$@"

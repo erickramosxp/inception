@@ -48,7 +48,7 @@ server {
 	# server_name _;
 
 	location / {
-		# proxy_pass http://wordpress:9000;   # nome do serviço do docker-compose
+		# proxy_pass http://wordpress:9000;   
         # proxy_set_header Host $host;
         # proxy_set_header X-Real-IP $remote_addr;
         # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -63,9 +63,6 @@ server {
 	location ~ \.php$ {
 		include snippets/fastcgi-php.conf;
 	
-		# With php-fpm (or other unix sockets):
-	#	fastcgi_pass unix:/run/php/php7.4-fpm.sock;
-		# With php-cgi (or other tcp sockets):
 		fastcgi_pass wordpress:9000;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 		include fastcgi_params;
@@ -79,11 +76,11 @@ server {
 	#}
 }
 
-server {
-    listen 80;
-    server_name erramos.42.fr;
-    return 301 https://$host$request_uri;
-}
+# server {
+#     listen 80;
+#     server_name erramos.42.fr;
+#     return 301 https://$host$request_uri;
+# }
 
 
 
