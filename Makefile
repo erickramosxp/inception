@@ -21,7 +21,7 @@ down:
 	@echo "Containers are now down."
 
     # Build or rebuild service images
-build:
+build: certs
 	@docker compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) build
 
     # Restart all services

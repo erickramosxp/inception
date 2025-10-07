@@ -22,6 +22,8 @@ COPY ./certs/* /etc/nginx/ssl/
 
 EXPOSE 443
 
+LABEL description="Nginx Server"
+
 ENTRYPOINT ["/usr/local/bin/startup-nginx.sh"]
 
 CMD ["nginx", "-g", "daemon off;"]

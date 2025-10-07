@@ -23,7 +23,7 @@ services:
       - db_data:/var/lib/mysql
 
   wordpress:
-    build: ./requirements/wordpress     # Dockerfile dentro da pasta wordpress
+    build: ./requirements/wordpress    
     image: wordpress:inception
     container_name: wordpress
     pull_policy: build
@@ -82,15 +82,15 @@ networks:
 
 volumes:
   db_data:
-    driver: local # Or your specific driver
-    driver_opts: # Correct indentation here
+    driver: local
+    driver_opts:
       o: bind
       type: none
       device: "/home/erramos/data/db_data"
 
   wp_data:
-    driver: local # Or your specific driver
-    driver_opts: # Correct indentation here
+    driver: local 
+    driver_opts:
       o: bind
       type: none
       device: "/home/erramos/data/wp_data"
