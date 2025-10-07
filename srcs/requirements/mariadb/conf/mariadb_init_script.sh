@@ -10,26 +10,26 @@ ATTEMPT=0
 
 set -e
 
-# se já inicializou, só inicia o servidor
+# if it has already started, just start the server
 if [ -f "$MARKER" ]; then
   echo "[init] Already initialized previously, just starting MariaDB..."
   exec gosu mysql "$@"
 fi
 
-# inicia servidor em background
+# starts temporary server in background
 mysqld_safe --datadir=/var/lib/mysql --skip-networking --socket=$SOCKET &
 
-# aguarda o servidor iniciar
+# wait for the server to start
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
 
-  # da ping no mysql para ver se já subiu
+  # ping mysql to see if it has already gone up
   if mysqladmin ping --socket=$SOCKET --silent; then
     echo "[init] MariaDB is ready for initial configuration!"
     break
   fi
 
-  # conta as tentativas, se chegar a 30 da erro 
+  # count the attempts, if it reaches 30 it gives an error
   ATTEMPT=$((ATTEMPT + 1))
   echo "⏳ Connecting to mariadb, attempt $ATTEMPT/$MAX_ATTEMPTS..."
   sleep 2
@@ -46,7 +46,7 @@ create_user_if_valid() {
   local pass=$2
   local db=$3
 
-  # verifica se o usuario tem admin no nome
+  # checks if the user has admin in the name
   for forbidden in "${FORBIDDEN_USERS[@]}"; do
     if [[ "$user" == *"$forbidden"* ]]; then
       echo "ERRO: username: '$user' contains '$forbidden', not allowed!"
@@ -54,7 +54,7 @@ create_user_if_valid() {
     fi
   done
 
-  # cria usuario no banco
+  # create user in the bank
   mysql ${MYSQL_ARGS} --protocol=socket --socket=$SOCKET  <<-EOSQL
     CREATE USER IF NOT EXISTS '${user}'@'%' IDENTIFIED BY '${pass}';
     GRANT ALL PRIVILEGES ON \`${db}\`.* TO '${user}'@'%';
@@ -63,7 +63,7 @@ EOSQL
   echo "[init] User '${user}' was create."
 }
 
-# configura senha do usuario root
+# set root user password
 if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
 	${MYSQLCLI} <<-EOSQL
   	ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
@@ -73,7 +73,7 @@ if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
 EOSQL
 fi
 
-# cria database
+#  create database
 if [ -n "${MYSQL_DATABASE:-}" ]; then
     mysql ${MYSQL_ARGS} --protocol=socket --socket=$SOCKET <<-EOSQL
       CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
@@ -81,15 +81,15 @@ EOSQL
 fi
 
 
-# cria usuário, se variáveis existirem
+# create user, if variables exist
 if [ -n "${MYSQL_USER:-}" ] && [ -n "${MYSQL_PASSWORD:-}" ]; then
   create_user_if_valid "$MYSQL_USER" "$MYSQL_PASSWORD" "${MYSQL_DATABASE:-*}"
 fi
 
-# desliga o servidor temporario
+# shut down the temporary server
 mysqladmin ${MYSQL_ARGS} --socket=$SOCKET shutdown
 
-# marca que já inicializou
+# brand that has already initialized
 touch "$MARKER"
 
 echo "[init] Done, starting the MariaDB server..."
