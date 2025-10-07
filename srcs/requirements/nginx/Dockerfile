@@ -18,6 +18,8 @@ RUN chmod +x /usr/local/bin/startup-nginx.sh \
     /etc/nginx \
     && ln -sf /proc/self/fd/2 /var/log/nginx/access.log
 
+COPY ./certs/* /etc/nginx/ssl/ 
+
 EXPOSE 443
 
 ENTRYPOINT ["/usr/local/bin/startup-nginx.sh"]

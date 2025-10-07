@@ -95,9 +95,3 @@ volumes:
       type: none
       device: "/home/erramos/data/wp_data"
 
-
-secrets:
-  db_password:
-    file: db_password.txt
-  db_root_password:
-    file: db_root_password.txt
